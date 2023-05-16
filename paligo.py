@@ -19,7 +19,7 @@ mapping = {
 }
 
 # Define the order of categories
-category_order = ['New feature', 'Improvement', 'Bug fix', 'Removal']
+category_order = ['New feature', 'Improvement', 'Bug fix', 'Removal', 'MISSING CATEGORY']
 
 
 # Function to load data from csv
@@ -35,7 +35,10 @@ def generate_notes_text(df, patch_version):
 
     # Populate the dictionary with the notes
     for _, row in df.iterrows():
-        category = mapping[row['Benutzerdefinierte Felder (Release Notes Category)']]
+        # Check if the category exists and if not, assign it to a default category
+        raw_category = row['Benutzerdefinierte Felder (Release Notes Category)']
+        category = mapping.get(raw_category, 'MISSING CATEGORY')
+
         vorgangsschlussel = row['Vorgangsschlüssel']
         release_note = row['Benutzerdefinierte Felder (Release Notes)']
         release_note_approved = row['Benutzerdefinierte Felder (Release Notes approved)']
