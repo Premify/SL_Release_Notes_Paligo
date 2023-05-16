@@ -83,6 +83,12 @@ def generate_notes_text(df, patch_version):
                 notes_text += f'{release_note}</p>'
     return notes_text
 
+# Function to download the text file
+def get_text_file_download_link(text, filename='data.txt', title='Download text file'):
+    """Generates a link to download the text file"""
+    b64 = base64.b64encode(text.encode()).decode()  # some strings <-> bytes conversions necessary here
+    return f'<a href="data:file/txt;base64,{b64}" download="{filename}">{title}</a>'
+
 
 # Streamlit code
 st.title("CSV to Text")
