@@ -3,7 +3,6 @@ import re
 import streamlit as st
 from collections import defaultdict
 import base64
-import pyperclip
 from datetime import datetime
 from pytz import timezone
 
@@ -12,20 +11,22 @@ st.set_page_config(layout="wide")
 
 # Define the mapping of categories to sections
 mapping = {
-    'New feature': 'New features',
-    'Improvement': 'Improvements',
-    'API': 'Improvements',
-    'Bug fix': 'Bug fixes',
-    'Removal': 'Removals',
+    'New feature': 'New feature',
+    'Improvement': 'Improvement',
+    'API': 'Improvement',
+    'Bug fix': 'Bug fix',
+    'Removal': 'Removal',
 }
 
 # Define the order of categories
-category_order = ['New features', 'Improvements', 'Bug fixes', 'Removals']
+category_order = ['New feature', 'Improvement', 'Bug fix', 'Removal']
+
 
 # Function to load data from csv
 @st.cache_data
 def load_data(file):
     return pd.read_csv(file)
+
 
 # Function to generate the notes text
 def generate_notes_text(df, patch_version):
@@ -45,13 +46,24 @@ def generate_notes_text(df, patch_version):
     release_date = berlin_time.strftime('%d-%B-%Y')
 
     # Start writing the notes text
-    notes_text = f'\nPatch Version {patch_version}\nRelease date: {release_date}\n\n'
+    notes_text = f'<h3>Patch Version {patch_version}<br></h3>'
+    notes_text += f'<p style="font-style: italic;">Release date: {release_date}<br></p>'
+
     # Loop through the categories in the desired order
     for category in category_order:
         # Check if the category exists in the notes
         if category in notes:
+            # Adjust the category name to plural if there's more than one item
+            if len(notes[category]) > 1:
+                if category == "Bug fix":
+                    category_display = "Bug fixes"
+                else:
+                    category_display = category + 's'
+            else:
+                category_display = category
+
             # Write the category heading
-            notes_text += f'\n{category}\n\n'
+            notes_text += f'<h3 style="font-style: italic;">{category_display}<br></h3>'
 
             # Write each note under its respective category
             for vorgangsschlussel, release_note, release_note_approved in notes[category]:
@@ -67,9 +79,10 @@ def generate_notes_text(df, patch_version):
                 else:
                     module_name = 'MODULE'
 
-                notes_text += f"{module_name} ({vorgangsschlussel})\n"
-                notes_text += f"{release_note}\n\n"
+                notes_text += f'<p><b>{module_name} ({vorgangsschlussel})</b><br>'
+                notes_text += f'{release_note}</p>'
     return notes_text
+
 
 # Function to download the text file
 def get_text_file_download_link(text, filename='data.txt', title='Download text file'):
@@ -85,21 +98,11 @@ uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     patch_version = st.text_input('\n\nEnter the Patch Version', '23.0.')
     df = load_data(uploaded_file)
-    notes_text = generate_notes_text(df,    patch_version)
-    # Create a dictionary to hold the status of each button
-    button_status_dict = {}
+    notes_text = generate_notes_text(df, patch_version)
 
-    lines = notes_text.split('\n')
-    for i, line in enumerate(lines):
-        if line.strip() != '':
-            # Create a unique key for each button using the index
-            button_key = f"button_{i}"
-            button_status = button_status_dict.get(button_key, False)
-            if st.button(f"{line}", key=button_key):
-                pyperclip.copy(line)
-                button_status_dict[button_key] = True
-                button_status = True
-            if button_status:
-                st.markdown("<span style='color:green'>Copied!<br /><br /></span>", unsafe_allow_html=True)
+    # Display the generated text in a markdown component to support HTML formatting
+    st.markdown(notes_text, unsafe_allow_html=True)
 
+    # Provide a link to download the generated text as a .txt file
     st.markdown(get_text_file_download_link(notes_text), unsafe_allow_html=True)
+
