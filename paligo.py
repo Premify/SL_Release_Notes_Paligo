@@ -90,7 +90,7 @@ st.title("CSV to Text")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
 if uploaded_file is not None:
-    patch_version = st.text_input('\n\nEnter the Patch Version', '23.0.')
+    patch_version = st.text_input('\n\nEnter the Patch version', '23.0.')
     df = load_data(uploaded_file)
     notes_text = generate_notes_text(df, patch_version)
 
