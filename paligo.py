@@ -46,7 +46,7 @@ def generate_notes_text(df, patch_version):
     release_date = berlin_time.strftime('%d-%B-%Y')
 
     # Start writing the notes text
-    notes_text = f'<h3>Patch Version {patch_version}<br></h3>'
+    notes_text = f'<h3>Patch version {patch_version}<br></h3>'
     notes_text += f'<p style="font-style: italic;">Release date: {release_date}<br></p>'
 
     # Loop through the categories in the desired order
@@ -90,7 +90,7 @@ st.title("CSV to Text")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
 if uploaded_file is not None:
-    patch_version = st.text_input('\n\nEnter the Patch version', '23.0.')
+    patch_version = st.text_input('\n\nEnter the patch version', '23.0.')
     df = load_data(uploaded_file)
     notes_text = generate_notes_text(df, patch_version)
 
