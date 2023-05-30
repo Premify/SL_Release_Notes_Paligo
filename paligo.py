@@ -41,7 +41,7 @@ def generate_notes_text(df, patch_version):
 
         vorgangsschlussel = row['Vorgangsschlüssel']
         release_note = row['Benutzerdefinierte Felder (Release Notes)']
-        release_note_approved = row['Benutzerdefinierte Felder (Release Notes approved)']
+        release_note_approved = row['Benutzerdefinierte Felder (Release Notes approved)'] if 'Benutzerdefinierte Felder (Release Notes approved)' in df.columns else 'MISSING'
         notes[category].append((vorgangsschlussel, release_note, release_note_approved))
 
     # Get current date in Berlin timezone
@@ -93,8 +93,8 @@ st.title("CSV to Text")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
 if uploaded_file is not None:
-    patch_version = st.text_input('\n\nEnter the patch version', '23.0.')
     df = load_data(uploaded_file)
+    patch_version = df["Lösungsversionen"].iloc[0]  # This gets the patch version from the first row of the column "Lösungsversionen"
     notes_text = generate_notes_text(df, patch_version)
 
     # Display the generated text in a markdown component to support HTML formatting
