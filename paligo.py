@@ -7,7 +7,11 @@ from datetime import datetime
 from pytz import timezone
 
 # Set the layout to wide
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="RN - Paligo Text",
+    page_icon="📋",
+    layout="wide"
+)
 
 # Define the mapping of categories to sections
 mapping = {
